@@ -24,7 +24,6 @@ header{text-align:center;margin-bottom:20px;}
 header h1{font-size:2rem;}
 header p{margin-top:5px;font-size:1.1rem;}
 
-/* BALÕES */
 #welcomeBalloons{
   display:flex;
   flex-direction:column;
@@ -43,7 +42,6 @@ header p{margin-top:5px;font-size:1.1rem;}
 }
 #welcomeBalloons button:hover{opacity:0.85;}
 
-/* FORMULÁRIOS E CARDS */
 form, .card, .reservation-card, .testimonial-card{
   background:#fff;
   padding:15px;
@@ -57,7 +55,6 @@ button.green{background:var(--green); color:#fff;}
 button.primary{background:var(--blue); color:#fff;}
 img.preview{width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:10px;}
 
-/* DEPOIMENTOS */
 .testimonial-card{margin-bottom:10px;}
 .testimonial-card p{margin:4px 0;}
 </style>
@@ -110,9 +107,6 @@ img.preview{width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bot
     <input id="r_bairro" placeholder="Bairro" required />
     <input id="r_cidade" placeholder="Cidade" required />
     <input id="r_estado" placeholder="Estado" required />
-    <label>Foto de Perfil (opcional)</label>
-    <input id="r_selfie" type="file" accept="image/*" />
-    <img id="preview" class="preview hidden"/>
     <button id="registerBtn" class="green" type="button">Criar Conta</button>
   </form>
 
@@ -129,7 +123,7 @@ img.preview{width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bot
     </select>
     <input id="search_origem" placeholder="Cidade de origem" />
     <input id="search_destino" placeholder="Cidade de destino" />
-    <button id="searchBtn" class="primary">Pesquisar</button>
+    <button id="searchBtn" class="primary" type="button">Pesquisar</button>
     <div id="search_results"></div>
   </div>
 
@@ -140,122 +134,19 @@ img.preview{width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bot
 
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-storage-compat.js"></script>
-
 <script>
-  // INICIALIZAÇÃO FIREBASE
-  const firebaseConfig = {
-    apiKey: "AIzaSyDGU_N1Un8Eo5DuaVbI4vru63ox_tSBR1o",
-    authDomain: "pego-entrego-c3010.firebaseapp.com",
-    projectId: "pego-entrego-c3010",
-    storageBucket: "pego-entrego-c3010.firebasestorage.app",
-    messagingSenderId: "118361704352",
-    appId: "1:118361704352:web:4a714264d54169a6dc46c5"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-  const storage = firebase.storage();
+function showSection(id){
+  ['about','purpose','testimonials','registerForm','loginForm','search','reservations']
+    .forEach(s=>document.getElementById(s).style.display=(s===id?'block':'none'));
+}
 
-  function showSection(id){
-    ['about','purpose','testimonials','registerForm','loginForm','search','reservations']
-      .forEach(s=>document.getElementById(s).style.display=(s===id?'block':'none'));
-  }
-
-  // BALÕES
-  document.getElementById('btnAbout').onclick = ()=>showSection('about');
-  document.getElementById('btnPurpose').onclick = ()=>showSection('purpose');
-  document.getElementById('btnTestimonials').onclick = ()=>showSection('testimonials');
-  document.getElementById('btnRegister').onclick = ()=>showSection('registerForm');
-  document.getElementById('btnLogin').onclick = ()=>showSection('loginForm');
-  document.getElementById('btnSearch').onclick = ()=>showSection('search');
-  document.getElementById('btnReservations').onclick = ()=>showSection('reservations');
-
-  // PREVIEW SELFIE
-  document.getElementById('r_selfie').onchange=function(e){
-    const file=e.target.files[0];
-    if(file){
-      const reader=new FileReader();
-      reader.onload=function(ev){
-        const img=document.getElementById('preview');
-        img.src=ev.target.result;
-        img.classList.remove('hidden');
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // CADASTRO
-  document.getElementById('registerBtn').onclick=async function(){
-    const name=document.getElementById('r_name').value;
-    const email=document.getElementById('r_email').value;
-    const pass=document.getElementById('r_pass').value;
-    const type=document.getElementById('r_type').value;
-    const telefone=document.getElementById('r_telefone').value;
-    const rua=document.getElementById('r_rua').value;
-    const numero=document.getElementById('r_numero').value;
-    const bairro=document.getElementById('r_bairro').value;
-    const cidade=document.getElementById('r_cidade').value;
-    const estado=document.getElementById('r_estado').value;
-    const selfieFile=document.getElementById('r_selfie').files[0];
-
-    if(!name||!email||!pass||!type||!telefone||!rua||!numero||!bairro||!cidade||!estado){
-      return alert("Preencha todos os campos obrigatórios!");
-    }
-
-    try{
-      const userCredential=await auth.createUserWithEmailAndPassword(email,pass);
-      const uid=userCredential.user.uid;
-      let selfieURL='';
-      if(selfieFile){
-        const selfieRef=storage.ref(`users/${uid}/selfie.jpg`);
-        await selfieRef.put(selfieFile);
-        selfieURL=await selfieRef.getDownloadURL();
-      }
-      await db.collection('users').doc(uid).set({
-        name,email,type,telefone,rua,numero,bairro,cidade,estado,selfieURL,approved:true,
-        createdAt:firebase.firestore.FieldValue.serverTimestamp()
-      });
-      alert("Cadastro realizado! Faça login.");
-      showSection('loginForm');
-    }catch(err){alert("Erro: "+err.message);}
-  };
-
-  // LOGIN
-  document.getElementById('loginBtn').onclick=async function(){
-    const email=document.getElementById('l_email').value;
-    const pass=document.getElementById('l_pass').value;
-    try{
-      const userCredential=await auth.signInWithEmailAndPassword(email,pass);
-      alert("Login realizado!");
-    }catch(err){alert("Erro: "+err.message);}
-  };
-
-  // PESQUISA
-  document.getElementById('searchBtn').onclick=async function(){
-    const type=document.getElementById('search_type').value;
-    const origem=document.getElementById('search_origem').value.toLowerCase();
-    const destino=document.getElementById('search_destino').value.toLowerCase();
-    const resultsDiv=document.getElementById('search_results');
-    resultsDiv.innerHTML="";
-
-    if(!origem||!destino){return alert("Preencha origem e destino");}
-
-    const snapshot=await db.collection(type).where('origem','==',origem).where('destino','==',destino).get();
-    if(snapshot.empty){resultsDiv.innerHTML="<p>Nenhuma oferta encontrada.</p>"; return;}
-    snapshot.forEach(doc=>{
-      const data=doc.data();
-      const div=document.createElement('div');
-      div.className='card';
-      div.innerHTML=`<p><strong>${type.toUpperCase()}</strong></p>
-                     <p>${data.origem} → ${data.destino}</p>
-                     <p>Criado por: ${data.userName||"Anônimo"}</p>`;
-      resultsDiv.appendChild(div);
-    });
-  };
+document.getElementById('btnAbout').onclick = ()=>showSection('about');
+document.getElementById('btnPurpose').onclick = ()=>showSection('purpose');
+document.getElementById('btnTestimonials').onclick = ()=>showSection('testimonials');
+document.getElementById('btnRegister').onclick = ()=>showSection('registerForm');
+document.getElementById('btnLogin').onclick = ()=>showSection('loginForm');
+document.getElementById('btnSearch').onclick = ()=>showSection('search');
+document.getElementById('btnReservations').onclick = ()=>showSection('reservations');
 </script>
 
 </body>
