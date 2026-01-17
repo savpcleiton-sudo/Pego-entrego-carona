@@ -5,10 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pego | Entrega & Carona</title>
 <style>
-:root{
-  --blue:#0a6cff;
-  --green:#00c48c;
-}
+:root{--blue:#0a6cff;--green:#00c48c;}
 *{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;margin:0;padding:0;}
 body{
   min-height:100vh;
@@ -48,8 +45,12 @@ button.green{background:var(--green);color:#fff;border:none;padding:12px;border-
 </div>
 
 <div id="sections" style="width:100%;max-width:400px;">
-  <div id="about" class="card" style="display:none;">
-    Somos a plataforma Pego, criada para ajudar pessoas comuns no dia a dia, conectando quem precisa viajar ou enviar algo com quem já vai fazer o trajeto.
+  <div id="about" class="card bigtext" style="display:none;">
+    Somos o <strong>Pego</strong> 🚗📦  
+    Uma plataforma criada para pessoas reais, do dia a dia.  
+    Aqui você encontra quem vai na mesma direção que você 🧭  
+    ou quem pode levar aquilo que você precisa enviar.  
+    Menos custo, mais ajuda, mais humanidade 🤝
   </div>
 
   <div id="purpose" class="card bigtext" style="display:none;">
@@ -66,20 +67,18 @@ button.green{background:var(--green);color:#fff;border:none;padding:12px;border-
   </div>
 
   <form id="register" style="display:none;">
-    <input placeholder="Nome completo">
-    <input placeholder="Email">
-    <input placeholder="Senha" type="password">
-    <select>
-      <option>Solicitante</option>
-      <option>Condutor</option>
-    </select>
-    <button class="green" type="button" onclick="alert('Conta criada com sucesso! 🎉')">Criar Conta</button>
+    <input id="regName" placeholder="Nome completo">
+    <input id="regPhone" placeholder="Telefone">
+    <input id="regEmail" placeholder="Email">
+    <input id="regPass" placeholder="Senha" type="password">
+    <input id="regPass2" placeholder="Confirmar senha" type="password">
+    <button class="green" type="button" onclick="register()">Criar Conta</button>
   </form>
 
   <form id="login" style="display:none;">
-    <input placeholder="Email">
-    <input placeholder="Senha" type="password">
-    <button class="primary" type="button">Entrar</button>
+    <input id="loginEmail" placeholder="Email">
+    <input id="loginPass" placeholder="Senha" type="password">
+    <button class="primary" type="button" onclick="login()">Entrar</button>
   </form>
 
   <div id="search" class="card" style="display:none;">
@@ -97,6 +96,43 @@ button.green{background:var(--green);color:#fff;border:none;padding:12px;border-
 function show(id){
   document.querySelectorAll('#sections > *').forEach(e=>e.style.display='none');
   document.getElementById(id).style.display='block';
+}
+
+function register(){
+  const name = regName.value.trim();
+  const phone = regPhone.value.trim();
+  const email = regEmail.value.trim();
+  const pass = regPass.value;
+  const pass2 = regPass2.value;
+
+  if(!name || !phone || !email || !pass || !pass2){
+    alert("Preencha todos os campos.");
+    return;
+  }
+  if(pass !== pass2){
+    alert("As senhas não coincidem.");
+    return;
+  }
+
+  localStorage.setItem("userEmail", email);
+  localStorage.setItem("userPass", pass);
+
+  alert("Conta criada com sucesso! 🎉");
+  show('login');
+}
+
+function login(){
+  const email = loginEmail.value.trim();
+  const pass = loginPass.value;
+
+  if(
+    email === localStorage.getItem("userEmail") &&
+    pass === localStorage.getItem("userPass")
+  ){
+    alert("Bem-vindo! Você entrou com sucesso 🚀");
+  } else {
+    alert("Email ou senha incorretos.");
+  }
 }
 </script>
 
