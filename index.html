@@ -8,7 +8,6 @@
 :root{
   --blue:#0a6cff;
   --green:#00c48c;
-  --balloon:#0a6cff;
 }
 *{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;margin:0;padding:0;}
 body{
@@ -21,132 +20,84 @@ body{
   color:#fff;
 }
 header{text-align:center;margin-bottom:20px;}
-header h1{font-size:2rem;}
-header p{margin-top:5px;font-size:1.1rem;}
-
-#welcomeBalloons{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  margin-bottom:20px;
-}
+#welcomeBalloons{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;width:100%;max-width:400px;}
 #welcomeBalloons button{
-  background:var(--balloon);
-  color:#fff;
-  font-weight:bold;
-  border:none;
-  border-radius:25px;
-  padding:12px;
-  cursor:pointer;
-  transition:0.2s;
+  background:#fff;color:#0a6cff;font-weight:bold;border:none;border-radius:20px;padding:12px;
 }
-#welcomeBalloons button:hover{opacity:0.85;}
-
-form, .card, .reservation-card, .testimonial-card{
-  background:#fff;
-  padding:15px;
-  border-radius:12px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.2);
-  margin-bottom:12px;
-  color:#000;
-}
-input,select,textarea{width:100%;padding:10px;margin:6px 0;border-radius:12px;border:1px solid #ddd;}
-button.green{background:var(--green); color:#fff;}
-button.primary{background:var(--blue); color:#fff;}
-img.preview{width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:10px;}
-
-.testimonial-card{margin-bottom:10px;}
-.testimonial-card p{margin:4px 0;}
+.card, form{background:#fff;color:#000;padding:15px;border-radius:12px;margin-bottom:12px;}
+input,select{width:100%;padding:10px;margin:6px 0;border-radius:10px;border:1px solid #ddd;}
+button.primary{background:var(--blue);color:#fff;border:none;padding:12px;border-radius:12px;width:100%;}
+button.green{background:var(--green);color:#fff;border:none;padding:12px;border-radius:12px;width:100%;}
+.bigtext{font-size:1.1rem;line-height:1.5;}
 </style>
 </head>
 <body>
 
 <header>
   <h1>Pego | Entrega & Carona</h1>
-  <p>Seja bem-vindo! Conectando pessoas e cidades</p>
+  <p>Conectando pessoas, cidades e oportunidades 🚗📦</p>
 </header>
 
 <div id="welcomeBalloons">
-  <button id="btnAbout">Quem somos nós?</button>
-  <button id="btnPurpose">Nossa finalidade</button>
-  <button id="btnTestimonials">Depoimentos</button>
-  <button id="btnRegister">Criar Cadastro</button>
-  <button id="btnLogin">Entrar</button>
-  <button id="btnSearch">Pesquisar Carona/Entrega</button>
-  <button id="btnReservations">Reservas Pendentes</button>
+  <button onclick="show('about')">Quem somos nós?</button>
+  <button onclick="show('purpose')">Nossa finalidade</button>
+  <button onclick="show('ratings')">Avaliações</button>
+  <button onclick="show('register')">Criar Cadastro</button>
+  <button onclick="show('login')">Entrar</button>
+  <button onclick="show('search')">Pesquisar Carona/Entrega</button>
 </div>
 
-<div id="sections" style="width:100%; max-width:400px;">
-
-  <div id="about" style="display:none;padding:10px;background:rgba(255,255,255,0.9);color:#000;border-radius:12px;">
-    Somos a plataforma Pego | Entrega & Carona. Conectamos pessoas que precisam viajar ou enviar itens com segurança e economia.
+<div id="sections" style="width:100%;max-width:400px;">
+  <div id="about" class="card" style="display:none;">
+    Somos a plataforma Pego, criada para ajudar pessoas comuns no dia a dia, conectando quem precisa viajar ou enviar algo com quem já vai fazer o trajeto.
   </div>
 
-  <div id="purpose" style="display:none;padding:10px;background:rgba(255,255,255,0.9);color:#000;border-radius:12px;">
-    Nossa finalidade é ajudar você a economizar e conhecer pessoas novas enquanto viaja ou despacha itens. 🚗📦🌎
+  <div id="purpose" class="card bigtext" style="display:none;">
+    Nossa missão é simples e poderosa:  
+    ajudar pessoas reais a economizar, se locomover e enviar itens com segurança. 💙  
+    Seja para ir ao trabalho 🚶‍♂️, visitar um parente 🏡, levar um documento 📄  
+    ou entregar uma encomenda 📦, o Pego existe para facilitar sua vida.
   </div>
 
-  <div id="testimonials" style="display:none;">
-    <div class="testimonial-card">“O Pego facilitou minha viagem e ainda economizei muito!” – João</div>
-    <div class="testimonial-card">“Consegui enviar meu pacote com segurança e rapidez!” – Maria</div>
-    <div class="testimonial-card">“Plataforma inovadora e prática para o dia a dia.” – Ana</div>
+  <div id="ratings" class="card" style="display:none;">
+    ⭐⭐⭐⭐⭐ João: “Viajei barato e conheci gente boa.”  
+    ⭐⭐⭐⭐ Maria: “Enviei meu pacote sem dor de cabeça.”  
+    ⭐⭐⭐⭐⭐ Ana: “App simples e muito útil no dia a dia.”
   </div>
 
-  <form id="registerForm" style="display:none;">
-    <input id="r_name" placeholder="Nome completo" required />
-    <input id="r_email" type="email" placeholder="Email" required />
-    <input id="r_pass" type="password" placeholder="Senha" required />
-    <select id="r_type" required>
-      <option value="">Selecione tipo</option>
-      <option value="solicitante">Solicitante</option>
-      <option value="condutor">Condutor</option>
+  <form id="register" style="display:none;">
+    <input placeholder="Nome completo">
+    <input placeholder="Email">
+    <input placeholder="Senha" type="password">
+    <select>
+      <option>Solicitante</option>
+      <option>Condutor</option>
     </select>
-    <input id="r_telefone" placeholder="Telefone" required />
-    <input id="r_rua" placeholder="Rua" required />
-    <input id="r_numero" placeholder="Número" required />
-    <input id="r_bairro" placeholder="Bairro" required />
-    <input id="r_cidade" placeholder="Cidade" required />
-    <input id="r_estado" placeholder="Estado" required />
-    <button id="registerBtn" class="green" type="button">Criar Conta</button>
+    <button class="green" type="button" onclick="alert('Conta criada com sucesso! 🎉')">Criar Conta</button>
   </form>
 
-  <form id="loginForm" style="display:none;">
-    <input id="l_email" type="email" placeholder="Email" />
-    <input id="l_pass" type="password" placeholder="Senha" />
-    <button id="loginBtn" class="primary" type="button">Entrar</button>
+  <form id="login" style="display:none;">
+    <input placeholder="Email">
+    <input placeholder="Senha" type="password">
+    <button class="primary" type="button">Entrar</button>
   </form>
 
-  <div id="search" style="display:none;">
-    <select id="search_type">
-      <option value="carona">Carona</option>
-      <option value="entrega">Entrega</option>
+  <div id="search" class="card" style="display:none;">
+    <select>
+      <option>Carona</option>
+      <option>Entrega</option>
     </select>
-    <input id="search_origem" placeholder="Cidade de origem" />
-    <input id="search_destino" placeholder="Cidade de destino" />
-    <button id="searchBtn" class="primary" type="button">Pesquisar</button>
-    <div id="search_results"></div>
+    <input placeholder="Cidade de origem">
+    <input placeholder="Cidade de destino">
+    <button class="primary">Pesquisar</button>
   </div>
-
-  <div id="reservations" style="display:none;">
-    <h3>Reservas Pendentes</h3>
-    <div id="pending_reservations"></div>
-  </div>
-
 </div>
 
 <script>
-function showSection(id){
-  ['about','purpose','testimonials','registerForm','loginForm','search','reservations']
-    .forEach(s=>document.getElementById(s).style.display=(s===id?'block':'none'));
+function show(id){
+  document.querySelectorAll('#sections > *').forEach(e=>e.style.display='none');
+  document.getElementById(id).style.display='block';
 }
-
-document.getElementById('btnAbout').onclick = ()=>showSection('about');
-document.getElementById('btnPurpose').onclick = ()=>showSection('purpose');
-document.getElementById('btnTestimonials').onclick = ()=>showSection('testimonials');
-document.getElementById('btnRegister').onclick = ()=>showSection('registerForm');
-document.getElementById('btnLogin').onclick = ()=>showSection('loginForm');
-document.getElementById('btnSearch').onclick = ()=>showSection('search');
-document.getElementById('btnReservations').onclick = ()=>showSection('reservations');
 </script>
 
 </body>
