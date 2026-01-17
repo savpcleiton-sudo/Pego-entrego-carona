@@ -3,79 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pego, Entrego, Carona 🚗📦</title>
-
+<title>Pego, Entrego/Carona 🚗📦</title>
 <style>
-:root{--blue:#0a6cff;--green:#00c48c;--bg:#f4f7fb;}
-*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;margin:0;padding:0;}
-body{background:var(--bg);}
-header{background:linear-gradient(90deg,var(--blue),var(--green));color:#fff;padding:20px;text-align:center;font-weight:bold;}
+:root{
+  --blue:#0a6cff;
+  --green:#00c48c;
+  --bgPublic:linear-gradient(135deg,#0a6cff,#00c48c);
+  --bgPrivate:linear-gradient(135deg,#e8fff6,#eef5ff);
+  --btnColor:#0a6cff;
+  --btnAlt:#eee;
+}
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+body{margin:0;background:#f4f7fb;}
+header{padding:16px;text-align:center;color:white;font-weight:bold;font-size:24px;background:linear-gradient(90deg,var(--blue),var(--green));}
 main{padding:16px;}
+
+/* Botões */
+button{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:none;font-size:16px;background:var(--btnColor);color:#fff;cursor:pointer;transition:0.3s;}
+button:hover{opacity:0.85;}
+button.alt{background:var(--btnAlt);color:#333;}
+
+/* Cards */
 .card{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 4px 12px rgba(0,0,0,.08);}
-input,select,button,textarea{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #ccc;font-size:16px;}
-button{background:var(--blue);color:#fff;border:none;cursor:pointer;transition:0.3s;}
-button:hover{opacity:0.9;}
-button.alt{background:#eee;color:#333;}
 .hidden{display:none;}
 .big button{padding:16px;font-size:18px;}
-.map-container{width:100%;height:300px;margin:12px 0;}
-.flex-row{display:flex;gap:8px;}
-.flex-row > *{flex:1;}
-.public-balloons{display:flex;flex-wrap:wrap;justify-content:space-between;}
-.balloon{flex:1; min-width:200px;margin:8px;padding:12px;border-radius:12px;background:linear-gradient(135deg,#0a6cff,#00c48c);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.1);}
-.public-buttons{text-align:center;margin-top:16px;}
+
+/* Labels */
+label{display:flex;align-items:center;gap:8px;margin-top:8px;}
+
+/* Públicos */
+#publicArea{background:var(--bgPublic);color:white;display:flex;flex-direction:column;align-items:center;gap:16px;padding:24px;border-radius:16px;}
+#publicArea h3{margin:8px 0;}
+#publicArea .balloon{background:rgba(255,255,255,0.1);padding:12px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.2);width:90%;text-align:center;}
+
+/* Privado */
+#private{background:var(--bgPrivate);}
+#private header{background:#00b362;font-weight:bold;color:white;padding:12px;text-align:center;border-radius:8px;margin-bottom:12px;}
+
+/* Inputs */
+input{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #ccc;font-size:16px;}
+
+/* Map */
+#map{width:100%;height:300px;margin:8px 0;border-radius:12px;}
 </style>
-
-<!-- Firebase -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.2/firebase-app.js";
-import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.6.2/firebase-database.js";
-
-const firebaseConfig = {
-  apiKey: "SUA_FIREBASE_API_KEY",
-  authDomain: "SEU_DOMINIO.firebaseapp.com",
-  databaseURL: "https://SEU_DOMINIO-default-rtdb.firebaseio.com",
-  projectId: "SEU_PROJECT_ID",
-  storageBucket: "SEU_DOMINIO.appspot.com",
-  messagingSenderId: "SEU_SENDER_ID",
-  appId: "SEU_APP_ID"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-window.db = db; // tornar global
-</script>
-
-<!-- Google Maps JS -->
-<script src="https://maps.googleapis.com/maps/api/js?key=SUA_GOOGLE_MAPS_API_KEY&libraries=places"></script>
 </head>
-
 <body>
-<header>
-  <h2>Pego, Entrego, Carona 🚗📦</h2>
-</header>
+
+<header>Pego, Entrego/Carona 🚗📦</header>
 
 <main>
-<!-- JANELA PÚBLICA -->
-<div id="publicArea" class="card">
-  <h3>Seja Bem-vindo! 👋</h3>
-  <div class="public-balloons">
-    <div class="balloon">
-      <h4>Quem somos nós 🌟</h4>
-      <p>Plataforma para conectar quem precisa se locomover ou enviar algo com quem já vai passar pelo mesmo caminho.</p>
-    </div>
-    <div class="balloon">
-      <h4>Nossa finalidade 🎯</h4>
-      <p>Economizar, ganhar dinheiro e criar conexões. Peça ou ofereça caronas, envie encomendas e transforme trajetos em oportunidades!</p>
-    </div>
+
+<!-- Área Pública -->
+<div id="publicArea">
+  <h3>Seja Bem-vindo ao Pego, Entrego/Carona!</h3>
+  <div class="balloon">
+    <h4>Quem somos nós 🌟</h4>
+    <p>Somos uma plataforma criada para aproximar pessoas que precisam se locomover ou enviar algo, com quem já vai passar pelo mesmo caminho.</p>
   </div>
-  <div class="public-buttons">
-    <button onclick="show('register')">Criar Conta</button>
-    <button class="alt" onclick="show('login')">Entrar</button>
+  <div class="balloon">
+    <h4>Nossa finalidade 🎯</h4>
+    <p>Ajudar você a economizar, ganhar dinheiro e criar conexões reais. Aqui você pode pedir ou oferecer caronas e enviar encomendas.</p>
   </div>
+  <button onclick="show('register')">Criar Conta</button>
+  <button class="alt" onclick="show('login')">Entrar</button>
 </div>
 
-<!-- CADASTRO -->
+<!-- Registro -->
 <div id="register" class="card hidden">
   <h3>Criar Conta 📝</h3>
   <input id="rName" placeholder="Nome completo">
@@ -91,7 +84,7 @@ window.db = db; // tornar global
   <button class="alt" onclick="back()">Voltar</button>
 </div>
 
-<!-- LOGIN -->
+<!-- Login -->
 <div id="login" class="card hidden">
   <h3>Entrar 🔐</h3>
   <input id="lEmail" placeholder="E-mail">
@@ -101,65 +94,56 @@ window.db = db; // tornar global
   <button class="alt" onclick="back()">Voltar</button>
 </div>
 
-<!-- PERFIL PRIVADO -->
+<!-- Perfil Privado -->
 <div id="private" class="card hidden big">
-  <h3 style="color:#00875F;font-weight:bold;">Seu Perfil 👤</h3>
+  <header>Seu Perfil 👤</header>
   <p><b id="userName"></b></p>
   <p id="userAddress"></p>
   <p id="userCar"></p>
 
-  <!-- Registrar veículo -->
-  <div id="vehicleSection">
-    <h4>Veículo 🚗 (opcional)</h4>
-    <input id="carName" placeholder="Nome do carro">
-    <input id="carBrand" placeholder="Marca do carro">
-    <input id="carColor" placeholder="Cor do carro">
-    <button onclick="saveVehicle()">Registrar Veículo</button>
-  </div>
+  <!-- Publicar Carona -->
+  <h4>Oferecer Carona 🚗</h4>
+  <input id="routeFrom" placeholder="Cidade de origem">
+  <input id="routeTo" placeholder="Cidade de destino">
+  <input id="intermediateCities" placeholder="Cidades intermediárias (separadas por vírgula)">
+  <input id="departureTime" type="time" placeholder="Horário de partida">
+  <div id="map"></div>
+  <button onclick="publishRide()">Publicar Carona</button>
 
-  <!-- Publicar carona -->
-  <div class="card">
-    <h4>Oferecer Carona 🚗</h4>
-    <input id="fromCity" placeholder="Cidade de origem">
-    <input id="toCity" placeholder="Cidade de destino">
-    <input id="intermediateCities" placeholder="Cidades intermediárias (separadas por vírgula)">
-    <input id="departureTime" type="time" placeholder="Horário de partida">
-    <div id="map" class="map-container"></div>
-    <button onclick="publishRide()">Publicar Carona</button>
-  </div>
+  <!-- Publicar Entrega -->
+  <h4>Oferecer Entrega 📦</h4>
+  <input id="deliveryFrom" placeholder="Cidade de origem">
+  <input id="deliveryTo" placeholder="Cidade de destino">
+  <button onclick="publishDelivery()">Publicar Entrega</button>
 
-  <!-- Publicar entrega -->
-  <div class="card">
-    <h4>Enviar/Receber Pacote 📦</h4>
-    <input id="packageFrom" placeholder="Cidade de origem">
-    <input id="packageTo" placeholder="Cidade de destino">
-    <button onclick="publishDelivery()">Publicar Entrega</button>
-  </div>
-
-  <!-- Candidaturas públicas -->
-  <div class="card">
-    <h4>Caronas disponíveis 🚗</h4>
-    <input id="searchRide" placeholder="Pesquisar caronas...">
-    <div id="ridesList"></div>
-  </div>
-  <div class="card">
-    <h4>Entregas disponíveis 📦</h4>
-    <input id="searchDelivery" placeholder="Pesquisar entregas...">
-    <div id="deliveriesList"></div>
-  </div>
-
-  <!-- Chat -->
-  <div class="card">
-    <h4>Chat 💬</h4>
-    <div id="chatMessages" style="height:200px;overflow-y:auto;border:1px solid #ccc;padding:8px;margin-bottom:8px;"></div>
-    <input id="chatInput" placeholder="Digite sua mensagem">
-    <button onclick="sendMessage()">Enviar</button>
-  </div>
+  <h4>Caronas e Entregas Disponíveis</h4>
+  <div id="ridesAvailable"></div>
+  <div id="deliveriesAvailable"></div>
 
   <button class="alt" onclick="logout()">Sair</button>
 </div>
 
+</main>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4I5hgGgHpYTS4izGr4KvZhklT2a4HL5c&libraries=places"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+
 <script>
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyDGU_N1Un8Eo5DuaVbI4vru63ox_tSBR1o",
+  authDomain: "pego-entrego-c3010.firebaseapp.com",
+  projectId: "pego-entrego-c3010",
+  storageBucket: "pego-entrego-c3010.appspot.com",
+  messagingSenderId: "118361704352",
+  appId: "1:118361704352:web:4a714264d54169a6dc46c5"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// Elementos
 const publicArea = document.getElementById('publicArea');
 const register = document.getElementById('register');
 const login = document.getElementById('login');
@@ -167,11 +151,8 @@ const privateArea = document.getElementById('private');
 const userName = document.getElementById('userName');
 const userAddress = document.getElementById('userAddress');
 const userCar = document.getElementById('userCar');
-const db = window.db;
 
-let map, directionsService, directionsRenderer;
-let currentUser = null;
-
+// Mostrar tela
 function show(id){
   publicArea.classList.add('hidden');
   register.classList.add('hidden');
@@ -185,182 +166,107 @@ function back(){
   publicArea.classList.remove('hidden');
 }
 
+// Cadastro/Login (localStorage para teste)
 function registerUser(){
-  const name = rName.value.trim();
-  const phone = rPhone.value.replace(/\D/g, "");
-  const street = rStreet.value.trim();
-  const number = rNumber.value.trim();
-  const district = rDistrict.value.trim();
-  const city = rCity.value.trim();
-  const email = rEmail.value.trim();
-  const p1 = rPass.value;
-  const p2 = rPass2.value;
-
-  if(!name||!phone||!street||!number||!district||!city||!email||!p1||!p2){
-    alert("Preencha todos os campos");
-    return;
-  }
-
-  if(phone.length !== 11){ alert("Telefone deve ter 11 dígitos"); return; }
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if(!emailRegex.test(email)){ alert("Digite um e-mail válido"); return; }
-  if(p1!==p2){ alert("As senhas não conferem"); return; }
-
-  const user = {name,phone,street,number,district,city,email,pass:p1,car:null};
-  localStorage.setItem("user",JSON.stringify(user));
+  const user = {
+    name: rName.value,
+    phone: rPhone.value,
+    street: rStreet.value,
+    number: rNumber.value,
+    district: rDistrict.value,
+    city: rCity.value,
+    email: rEmail.value,
+    pass: rPass.value
+  };
+  localStorage.setItem("user", JSON.stringify(user));
   enter(user);
 }
 
 function loginUser(){
   const data = JSON.parse(localStorage.getItem("user"));
-  if(!data){ alert("Nenhuma conta encontrada"); return; }
-  if(lEmail.value!==data.email || lPass.value!==data.pass){ alert("E-mail ou senha incorretos"); return; }
+  if(!data){alert("Nenhuma conta encontrada"); return;}
+  if(lEmail.value!==data.email || lPass.value!==data.pass){alert("E-mail ou senha incorretos"); return;}
   enter(data);
 }
 
 function enter(user){
-  currentUser = user;
   publicArea.classList.add('hidden');
   register.classList.add('hidden');
   login.classList.add('hidden');
   privateArea.classList.remove('hidden');
-
   userName.textContent = user.name;
   userAddress.textContent = `${user.street}, ${user.number} - ${user.district} / ${user.city}`;
-  userCar.textContent = user.car ? `🚗 ${user.car.name} - ${user.car.brand} (${user.car.color})` : '';
-
-  initMap();
-  loadRides();
-  loadDeliveries();
-  loadChat();
+  userCar.textContent = user.car?`🚗 ${user.car.name} - ${user.car.brand} (${user.car.color})`:'';
 }
 
+// Logout
 function logout(){
   privateArea.classList.add('hidden');
   publicArea.classList.remove('hidden');
-  currentUser = null;
-}
-
-function saveVehicle(){
-  const name = document.getElementById('carName').value.trim();
-  const brand = document.getElementById('carBrand').value.trim();
-  const color = document.getElementById('carColor').value.trim();
-  if(!name || !brand || !color){ alert("Preencha todos os campos do veículo"); return; }
-  currentUser.car = {name,brand,color};
-  userCar.textContent = `🚗 ${name} - ${brand} (${color})`;
-  localStorage.setItem("user", JSON.stringify(currentUser));
-}
-
-function publishRide(){
-  const from = document.getElementById('fromCity').value.trim();
-  const to = document.getElementById('toCity').value.trim();
-  const intermediates = document.getElementById('intermediateCities').value.split(',').map(c=>c.trim()).filter(Boolean);
-  const time = document.getElementById('departureTime').value;
-
-  if(!from||!to||!time){ alert("Preencha origem, destino e horário"); return; }
-
-  const rideData = {driver: currentUser.name, from, to, intermediates, time, vehicle:currentUser.car||null};
-  push(ref(db,'rides'), rideData);
-  alert("Carona publicada!");
-  document.getElementById('fromCity').value='';
-  document.getElementById('toCity').value='';
-  document.getElementById('intermediateCities').value='';
-  document.getElementById('departureTime').value='';
-  loadRides();
-}
-
-function publishDelivery(){
-  const from = document.getElementById('packageFrom').value.trim();
-  const to = document.getElementById('packageTo').value.trim();
-  if(!from||!to){ alert("Preencha origem e destino"); return; }
-
-  const deliveryData = {sender: currentUser.name, from, to};
-  push(ref(db,'deliveries'), deliveryData);
-  alert("Entrega publicada!");
-  document.getElementById('packageFrom').value='';
-  document.getElementById('packageTo').value='';
-  loadDeliveries();
-}
-
-// Carregar caronas e mostrar rota ao clicar
-function loadRides(){
-  const list = document.getElementById('ridesList');
-  list.innerHTML='';
-  onValue(ref(db,'rides'), snapshot=>{
-    list.innerHTML='';
-    snapshot.forEach(snap=>{
-      const r = snap.val();
-      const div = document.createElement('div');
-      div.style.border='1px solid #ccc';
-      div.style.padding='8px';
-      div.style.marginBottom='4px';
-      div.style.cursor='pointer';
-      div.textContent = `${r.driver} - ${r.from} → ${r.to} às ${r.time}` + (r.vehicle?` - 🚗 ${r.vehicle.name} (${r.vehicle.color})`:'');
-      div.onclick = ()=>{ drawRoute(r.from,[...r.intermediates],r.to); alert('Solicitação enviada!'); };
-      list.appendChild(div);
-    });
-  });
-}
-
-function loadDeliveries(){
-  const list = document.getElementById('deliveriesList');
-  list.innerHTML='';
-  onValue(ref(db,'deliveries'), snapshot=>{
-    list.innerHTML='';
-    snapshot.forEach(snap=>{
-      const d = snap.val();
-      const div = document.createElement('div');
-      div.style.border='1px solid #ccc';
-      div.style.padding='8px';
-      div.style.marginBottom='4px';
-      div.innerHTML=`${d.sender} - ${d.from} → ${d.to} <button onclick="alert('Solicitação enviada!')">Solicitar</button>`;
-      list.appendChild(div);
-    });
-  });
 }
 
 // Mapa
+let map, directionsService, directionsRenderer;
 function initMap(){
-  map = new google.maps.Map(document.getElementById('map'), {center:{lat:-23.55052,lng:-46.633308},zoom:6});
+  map = new google.maps.Map(document.getElementById("map"), {zoom:5, center:{lat:-23.5489,lng:-46.6388}});
   directionsService = new google.maps.DirectionsService();
   directionsRenderer = new google.maps.DirectionsRenderer({map:map});
 }
+window.onload = initMap;
 
-// Desenhar rota condutor
-function drawRoute(from,intermediate,to){
-  const waypts = intermediate.map(c=>({location:c, stopover:true}));
-  directionsService.route({
-    origin: from,
-    destination: to,
-    waypoints: waypts,
-    travelMode: 'DRIVING'
-  }, (result,status)=>{
-    if(status==='OK'){ directionsRenderer.setDirections(result); } else { alert('Erro ao desenhar rota: '+status); }
-  });
+// Publicar Carona (simulação)
+function publishRide(){
+  const from = routeFrom.value;
+  const to = routeTo.value;
+  const intermediates = intermediateCities.value.split(',').map(c=>c.trim()).filter(c=>c);
+  const time = departureTime.value;
+  const ride = {from,to,intermediates,time,user:userName.textContent};
+  db.ref('rides').push(ride);
+  alert('Carona publicada ✅');
+  updateRides();
+  drawRoute(from,to,intermediates);
 }
 
-// CHAT
-function loadChat(){
-  const chat = document.getElementById('chatMessages');
-  onValue(ref(db,'chat'), snapshot=>{
-    chat.innerHTML='';
-    snapshot.forEach(snap=>{
-      const m = snap.val();
-      const div = document.createElement('div');
-      div.textContent=`${m.user}: ${m.message}`;
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
+// Publicar Entrega (simulação)
+function publishDelivery(){
+  const from = deliveryFrom.value;
+  const to = deliveryTo.value;
+  const delivery = {from,to,user:userName.textContent};
+  db.ref('deliveries').push(delivery);
+  alert('Entrega publicada ✅');
+  updateDeliveries();
+}
+
+// Atualiza caronas/entregas
+function updateRides(){
+  const container = document.getElementById('ridesAvailable');
+  container.innerHTML='';
+  db.ref('rides').once('value',snap=>{
+    snap.forEach(r=>{
+      const val = r.val();
+      container.innerHTML += `<div class="card"><b>${val.user}</b> - ${val.from} ➡ ${val.to} - ${val.time}</div>`;
     });
   });
 }
 
-function sendMessage(){
-  const msg = document.getElementById('chatInput').value.trim();
-  if(!msg) return;
-  push(ref(db,'chat'),{user:currentUser.name,message:msg});
-  document.getElementById('chatInput').value='';
+function updateDeliveries(){
+  const container = document.getElementById('deliveriesAvailable');
+  container.innerHTML='';
+  db.ref('deliveries').once('value',snap=>{
+    snap.forEach(d=>{
+      const val = d.val();
+      container.innerHTML += `<div class="card"><b>${val.user}</b> - ${val.from} ➡ ${val.to}</div>`;
+    });
+  });
+}
+
+// Rota no mapa
+function drawRoute(from,to,intermediates){
+  const waypts = intermediates.map(c=>({location:c,stopover:true}));
+  directionsService.route({origin:from,destination:to,waypoints:waypts,travelMode:'DRIVING'},(res,status)=>{
+    if(status==='OK'){directionsRenderer.setDirections(res);}else{alert('Não foi possível traçar rota');}
+  });
 }
 </script>
-
 </body>
 </html>
