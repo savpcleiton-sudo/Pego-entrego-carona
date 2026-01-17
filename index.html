@@ -3,146 +3,364 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pego | Entrega & Carona</title>
-<style>
-:root{--blue:#0a6cff;--green:#00c48c;}
-*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;margin:0;padding:0;}
-body{min-height:100vh;background:linear-gradient(120deg,var(--blue),var(--green));color:#fff;padding:15px;}
-.hidden{display:none;}
-.card,form{background:#fff;color:#000;padding:15px;border-radius:14px;margin-bottom:12px;box-shadow:0 4px 12px rgba(0,0,0,.2);}
-button{border:none;border-radius:20px;padding:12px;font-weight:bold;cursor:pointer;}
-.primary{background:var(--blue);color:#fff;}
-.green{background:var(--green);color:#fff;}
-input{width:100%;padding:10px;margin:6px 0;border-radius:10px;border:1px solid #ddd;}
-header{text-align:center;margin-bottom:15px;}
-nav button{width:100%;margin:6px 0;}
-</style>
-</head>
-<body>
+<title>Pego, Entrego, Carona 🚗📦</title>
 
+<style>
+:root{--blue:#0a6cff;--green:#00c48c;--bg:#f4f7fb;}
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;margin:0;padding:0;}
+body{background:var(--bg);}
+header{background:linear-gradient(90deg,var(--blue),var(--green));color:#fff;padding:20px;text-align:center;font-weight:bold;}
+main{padding:16px;}
+.card{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 4px 12px rgba(0,0,0,.08);}
+input,select,button,textarea{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #ccc;font-size:16px;}
+button{background:var(--blue);color:#fff;border:none;cursor:pointer;transition:0.3s;}
+button:hover{opacity:0.9;}
+button.alt{background:#eee;color:#333;}
+.hidden{display:none;}
+.big button{padding:16px;font-size:18px;}
+.map-container{width:100%;height:300px;margin:12px 0;}
+.flex-row{display:flex;gap:8px;}
+.flex-row > *{flex:1;}
+.public-balloons{display:flex;flex-wrap:wrap;justify-content:space-between;}
+.balloon{flex:1; min-width:200px;margin:8px;padding:12px;border-radius:12px;background:linear-gradient(135deg,#0a6cff,#00c48c);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.1);}
+.public-buttons{text-align:center;margin-top:16px;}
+</style>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.2/firebase-app.js";
+import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.6.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "SUA_FIREBASE_API_KEY",
+  authDomain: "SEU_DOMINIO.firebaseapp.com",
+  databaseURL: "https://SEU_DOMINIO-default-rtdb.firebaseio.com",
+  projectId: "SEU_PROJECT_ID",
+  storageBucket: "SEU_DOMINIO.appspot.com",
+  messagingSenderId: "SEU_SENDER_ID",
+  appId: "SEU_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+window.db = db; // tornar global
+</script>
+
+<!-- Google Maps JS -->
+<script src="https://maps.googleapis.com/maps/api/js?key=SUA_GOOGLE_MAPS_API_KEY&libraries=places"></script>
+</head>
+
+<body>
 <header>
-  <h1>Pego | Entrega & Carona</h1>
-  <p>Conectando pessoas, cidades e oportunidades 🚗📦🌍</p>
+  <h2>Pego, Entrego, Carona 🚗📦</h2>
 </header>
 
-<div id="publicArea">
-  <div class="card">
-    <h3>Quem somos nós? 🤝</h3>
-    <p>Somos uma plataforma criada para facilitar a vida das pessoas comuns. Aqui você encontra caronas, envia encomendas e cria conexões reais entre cidades e pessoas.</p>
+<main>
+<!-- JANELA PÚBLICA -->
+<div id="publicArea" class="card">
+  <h3>Seja Bem-vindo! 👋</h3>
+  <div class="public-balloons">
+    <div class="balloon">
+      <h4>Quem somos nós 🌟</h4>
+      <p>Plataforma para conectar quem precisa se locomover ou enviar algo com quem já vai passar pelo mesmo caminho.</p>
+    </div>
+    <div class="balloon">
+      <h4>Nossa finalidade 🎯</h4>
+      <p>Economizar, ganhar dinheiro e criar conexões. Peça ou ofereça caronas, envie encomendas e transforme trajetos em oportunidades!</p>
+    </div>
   </div>
-  <div class="card">
-    <h3>Nossa finalidade 🚀</h3>
-    <p>Economizar tempo, dinheiro e aproximar pessoas. Seja para viajar ou enviar algo importante, o Pego existe para tornar o dia a dia mais simples, humano e acessível.</p>
+  <div class="public-buttons">
+    <button onclick="show('register')">Criar Conta</button>
+    <button class="alt" onclick="show('login')">Entrar</button>
   </div>
-  <nav>
-    <button class="green" onclick="show('register')">Criar cadastro</button>
-    <button class="primary" onclick="show('login')">Entrar</button>
-  </nav>
 </div>
 
-<form id="register" class="hidden">
-  <h3>Criar Conta</h3>
-  <input id="r_name" placeholder="Nome completo">
-  <input id="r_tel" placeholder="Telefone">
-  <input id="r_rua" placeholder="Rua">
-  <input id="r_num" placeholder="Número">
-  <input id="r_bairro" placeholder="Bairro">
-  <input id="r_cidade" placeholder="Cidade">
-  <input id="r_estado" placeholder="Estado">
-  <input id="r_email" placeholder="Email">
-  <input id="r_pass" type="password" placeholder="Senha">
-  <input id="r_pass2" type="password" placeholder="Confirmar senha">
-  <button type="button" class="green" onclick="register()">Criar Conta</button>
-  <button type="button" onclick="back()">Voltar</button>
-</form>
-
-<form id="login" class="hidden">
-  <h3>Entrar</h3>
-  <input id="l_email" placeholder="Email">
-  <input id="l_pass" type="password" placeholder="Senha">
-  <button type="button" class="primary" onclick="login()">Entrar</button>
-  <button type="button" onclick="resetPass()">Esqueci minha senha</button>
-  <button type="button" onclick="back()">Voltar</button>
-</form>
-
-<div id="private" class="hidden">
-  <div class="card">
-    <h3 id="userName"></h3>
-    <p id="userCity"></p>
-  </div>
-  <nav>
-    <button onclick="alert('Publicar Carona em breve')">Publicar Carona</button>
-    <button onclick="alert('Pesquisar Carona em breve')">Pesquisar Carona</button>
-    <button onclick="alert('Publicar Entrega em breve')">Publicar Entrega</button>
-    <button onclick="alert('Pesquisar Entrega em breve')">Pesquisar Entrega</button>
-    <button onclick="alert('Avaliação em breve ⭐')">Avaliar Usuário</button>
-    <button onclick="alert('Suporte: suporte@pego.app 🛠️')">Falar com Suporte</button>
-    <button onclick="logout()">Sair</button>
-  </nav>
+<!-- CADASTRO -->
+<div id="register" class="card hidden">
+  <h3>Criar Conta 📝</h3>
+  <input id="rName" placeholder="Nome completo">
+  <input id="rPhone" placeholder="Telefone (11 dígitos)">
+  <input id="rStreet" placeholder="Rua">
+  <input id="rNumber" placeholder="Número">
+  <input id="rDistrict" placeholder="Bairro">
+  <input id="rCity" placeholder="Cidade">
+  <input id="rEmail" placeholder="E-mail">
+  <input id="rPass" type="password" placeholder="Senha">
+  <input id="rPass2" type="password" placeholder="Confirmar senha">
+  <button onclick="registerUser()">Criar e Entrar</button>
+  <button class="alt" onclick="back()">Voltar</button>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-firestore-compat.js"></script>
+<!-- LOGIN -->
+<div id="login" class="card hidden">
+  <h3>Entrar 🔐</h3>
+  <input id="lEmail" placeholder="E-mail">
+  <input id="lPass" type="password" placeholder="Senha">
+  <button onclick="loginUser()">Entrar</button>
+  <button class="alt" onclick="alert('Recuperação de senha em breve 📧')">Esqueci minha senha</button>
+  <button class="alt" onclick="back()">Voltar</button>
+</div>
+
+<!-- PERFIL PRIVADO -->
+<div id="private" class="card hidden big">
+  <h3 style="color:#00875F;font-weight:bold;">Seu Perfil 👤</h3>
+  <p><b id="userName"></b></p>
+  <p id="userAddress"></p>
+  <p id="userCar"></p>
+
+  <!-- Registrar veículo -->
+  <div id="vehicleSection">
+    <h4>Veículo 🚗 (opcional)</h4>
+    <input id="carName" placeholder="Nome do carro">
+    <input id="carBrand" placeholder="Marca do carro">
+    <input id="carColor" placeholder="Cor do carro">
+    <button onclick="saveVehicle()">Registrar Veículo</button>
+  </div>
+
+  <!-- Publicar carona -->
+  <div class="card">
+    <h4>Oferecer Carona 🚗</h4>
+    <input id="fromCity" placeholder="Cidade de origem">
+    <input id="toCity" placeholder="Cidade de destino">
+    <input id="intermediateCities" placeholder="Cidades intermediárias (separadas por vírgula)">
+    <input id="departureTime" type="time" placeholder="Horário de partida">
+    <div id="map" class="map-container"></div>
+    <button onclick="publishRide()">Publicar Carona</button>
+  </div>
+
+  <!-- Publicar entrega -->
+  <div class="card">
+    <h4>Enviar/Receber Pacote 📦</h4>
+    <input id="packageFrom" placeholder="Cidade de origem">
+    <input id="packageTo" placeholder="Cidade de destino">
+    <button onclick="publishDelivery()">Publicar Entrega</button>
+  </div>
+
+  <!-- Candidaturas públicas -->
+  <div class="card">
+    <h4>Caronas disponíveis 🚗</h4>
+    <input id="searchRide" placeholder="Pesquisar caronas...">
+    <div id="ridesList"></div>
+  </div>
+  <div class="card">
+    <h4>Entregas disponíveis 📦</h4>
+    <input id="searchDelivery" placeholder="Pesquisar entregas...">
+    <div id="deliveriesList"></div>
+  </div>
+
+  <!-- Chat -->
+  <div class="card">
+    <h4>Chat 💬</h4>
+    <div id="chatMessages" style="height:200px;overflow-y:auto;border:1px solid #ccc;padding:8px;margin-bottom:8px;"></div>
+    <input id="chatInput" placeholder="Digite sua mensagem">
+    <button onclick="sendMessage()">Enviar</button>
+  </div>
+
+  <button class="alt" onclick="logout()">Sair</button>
+</div>
 
 <script>
-const firebaseConfig={
-  apiKey:"AIzaSyDGU_N1Un8Eo5DuaVbI4vru63ox_tSBR1o",
-  authDomain:"pego-entrego-c3010.firebaseapp.com",
-  projectId:"pego-entrego-c3010"
-};
-firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth();
-const db=firebase.firestore();
+const publicArea = document.getElementById('publicArea');
+const register = document.getElementById('register');
+const login = document.getElementById('login');
+const privateArea = document.getElementById('private');
+const userName = document.getElementById('userName');
+const userAddress = document.getElementById('userAddress');
+const userCar = document.getElementById('userCar');
+const db = window.db;
+
+let map, directionsService, directionsRenderer;
+let currentUser = null;
 
 function show(id){
-  document.getElementById('publicArea').classList.add('hidden');
-  document.getElementById('login').classList.add('hidden');
-  document.getElementById('register').classList.add('hidden');
+  publicArea.classList.add('hidden');
+  register.classList.add('hidden');
+  login.classList.add('hidden');
   document.getElementById(id).classList.remove('hidden');
 }
+
 function back(){
-  document.getElementById('register').classList.add('hidden');
-  document.getElementById('login').classList.add('hidden');
-  document.getElementById('publicArea').classList.remove('hidden');
+  register.classList.add('hidden');
+  login.classList.add('hidden');
+  publicArea.classList.remove('hidden');
 }
 
-async function register(){
-  const name=r_name.value, tel=r_tel.value, rua=r_rua.value, num=r_num.value,
-  bairro=r_bairro.value, cidade=r_cidade.value, estado=r_estado.value,
-  email=r_email.value, pass=r_pass.value, pass2=r_pass2.value;
+function registerUser(){
+  const name = rName.value.trim();
+  const phone = rPhone.value.replace(/\D/g, "");
+  const street = rStreet.value.trim();
+  const number = rNumber.value.trim();
+  const district = rDistrict.value.trim();
+  const city = rCity.value.trim();
+  const email = rEmail.value.trim();
+  const p1 = rPass.value;
+  const p2 = rPass2.value;
 
-  if(!name||!tel||!rua||!num||!bairro||!cidade||!estado||!email||!pass||!pass2)
-    return alert("Preencha tudo!");
-  if(pass!==pass2) return alert("Senhas diferentes!");
+  if(!name||!phone||!street||!number||!district||!city||!email||!p1||!p2){
+    alert("Preencha todos os campos");
+    return;
+  }
 
-  const u=await auth.createUserWithEmailAndPassword(email,pass);
-  await db.collection("users").doc(u.user.uid).set({name,tel,rua,num,bairro,cidade,estado});
+  if(phone.length !== 11){ alert("Telefone deve ter 11 dígitos"); return; }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!emailRegex.test(email)){ alert("Digite um e-mail válido"); return; }
+  if(p1!==p2){ alert("As senhas não conferem"); return; }
 
-  userName.innerText="Olá, "+name;
-  userCity.innerText=cidade+" - "+estado;
-  document.getElementById('register').classList.add('hidden');
-  document.getElementById('private').classList.remove('hidden');
+  const user = {name,phone,street,number,district,city,email,pass:p1,car:null};
+  localStorage.setItem("user",JSON.stringify(user));
+  enter(user);
 }
 
-async function login(){
-  const u=await auth.signInWithEmailAndPassword(l_email.value,l_pass.value);
-  const doc=await db.collection("users").doc(u.user.uid).get();
-  userName.innerText="Olá, "+doc.data().name;
-  userCity.innerText=doc.data().cidade+" - "+doc.data().estado;
-  document.getElementById('login').classList.add('hidden');
-  document.getElementById('private').classList.remove('hidden');
+function loginUser(){
+  const data = JSON.parse(localStorage.getItem("user"));
+  if(!data){ alert("Nenhuma conta encontrada"); return; }
+  if(lEmail.value!==data.email || lPass.value!==data.pass){ alert("E-mail ou senha incorretos"); return; }
+  enter(data);
 }
 
-function resetPass(){
-  if(!l_email.value) return alert("Informe seu email");
-  auth.sendPasswordResetEmail(l_email.value);
-  alert("Email de recuperação enviado!");
+function enter(user){
+  currentUser = user;
+  publicArea.classList.add('hidden');
+  register.classList.add('hidden');
+  login.classList.add('hidden');
+  privateArea.classList.remove('hidden');
+
+  userName.textContent = user.name;
+  userAddress.textContent = `${user.street}, ${user.number} - ${user.district} / ${user.city}`;
+  userCar.textContent = user.car ? `🚗 ${user.car.name} - ${user.car.brand} (${user.car.color})` : '';
+
+  initMap();
+  loadRides();
+  loadDeliveries();
+  loadChat();
 }
+
 function logout(){
-  auth.signOut();
-  location.reload();
+  privateArea.classList.add('hidden');
+  publicArea.classList.remove('hidden');
+  currentUser = null;
+}
+
+function saveVehicle(){
+  const name = document.getElementById('carName').value.trim();
+  const brand = document.getElementById('carBrand').value.trim();
+  const color = document.getElementById('carColor').value.trim();
+  if(!name || !brand || !color){ alert("Preencha todos os campos do veículo"); return; }
+  currentUser.car = {name,brand,color};
+  userCar.textContent = `🚗 ${name} - ${brand} (${color})`;
+  localStorage.setItem("user", JSON.stringify(currentUser));
+}
+
+function publishRide(){
+  const from = document.getElementById('fromCity').value.trim();
+  const to = document.getElementById('toCity').value.trim();
+  const intermediates = document.getElementById('intermediateCities').value.split(',').map(c=>c.trim()).filter(Boolean);
+  const time = document.getElementById('departureTime').value;
+
+  if(!from||!to||!time){ alert("Preencha origem, destino e horário"); return; }
+
+  const rideData = {driver: currentUser.name, from, to, intermediates, time, vehicle:currentUser.car||null};
+  push(ref(db,'rides'), rideData);
+  alert("Carona publicada!");
+  document.getElementById('fromCity').value='';
+  document.getElementById('toCity').value='';
+  document.getElementById('intermediateCities').value='';
+  document.getElementById('departureTime').value='';
+  loadRides();
+}
+
+function publishDelivery(){
+  const from = document.getElementById('packageFrom').value.trim();
+  const to = document.getElementById('packageTo').value.trim();
+  if(!from||!to){ alert("Preencha origem e destino"); return; }
+
+  const deliveryData = {sender: currentUser.name, from, to};
+  push(ref(db,'deliveries'), deliveryData);
+  alert("Entrega publicada!");
+  document.getElementById('packageFrom').value='';
+  document.getElementById('packageTo').value='';
+  loadDeliveries();
+}
+
+// Carregar caronas e mostrar rota ao clicar
+function loadRides(){
+  const list = document.getElementById('ridesList');
+  list.innerHTML='';
+  onValue(ref(db,'rides'), snapshot=>{
+    list.innerHTML='';
+    snapshot.forEach(snap=>{
+      const r = snap.val();
+      const div = document.createElement('div');
+      div.style.border='1px solid #ccc';
+      div.style.padding='8px';
+      div.style.marginBottom='4px';
+      div.style.cursor='pointer';
+      div.textContent = `${r.driver} - ${r.from} → ${r.to} às ${r.time}` + (r.vehicle?` - 🚗 ${r.vehicle.name} (${r.vehicle.color})`:'');
+      div.onclick = ()=>{ drawRoute(r.from,[...r.intermediates],r.to); alert('Solicitação enviada!'); };
+      list.appendChild(div);
+    });
+  });
+}
+
+function loadDeliveries(){
+  const list = document.getElementById('deliveriesList');
+  list.innerHTML='';
+  onValue(ref(db,'deliveries'), snapshot=>{
+    list.innerHTML='';
+    snapshot.forEach(snap=>{
+      const d = snap.val();
+      const div = document.createElement('div');
+      div.style.border='1px solid #ccc';
+      div.style.padding='8px';
+      div.style.marginBottom='4px';
+      div.innerHTML=`${d.sender} - ${d.from} → ${d.to} <button onclick="alert('Solicitação enviada!')">Solicitar</button>`;
+      list.appendChild(div);
+    });
+  });
+}
+
+// Mapa
+function initMap(){
+  map = new google.maps.Map(document.getElementById('map'), {center:{lat:-23.55052,lng:-46.633308},zoom:6});
+  directionsService = new google.maps.DirectionsService();
+  directionsRenderer = new google.maps.DirectionsRenderer({map:map});
+}
+
+// Desenhar rota condutor
+function drawRoute(from,intermediate,to){
+  const waypts = intermediate.map(c=>({location:c, stopover:true}));
+  directionsService.route({
+    origin: from,
+    destination: to,
+    waypoints: waypts,
+    travelMode: 'DRIVING'
+  }, (result,status)=>{
+    if(status==='OK'){ directionsRenderer.setDirections(result); } else { alert('Erro ao desenhar rota: '+status); }
+  });
+}
+
+// CHAT
+function loadChat(){
+  const chat = document.getElementById('chatMessages');
+  onValue(ref(db,'chat'), snapshot=>{
+    chat.innerHTML='';
+    snapshot.forEach(snap=>{
+      const m = snap.val();
+      const div = document.createElement('div');
+      div.textContent=`${m.user}: ${m.message}`;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    });
+  });
+}
+
+function sendMessage(){
+  const msg = document.getElementById('chatInput').value.trim();
+  if(!msg) return;
+  push(ref(db,'chat'),{user:currentUser.name,message:msg});
+  document.getElementById('chatInput').value='';
 }
 </script>
+
 </body>
 </html>
